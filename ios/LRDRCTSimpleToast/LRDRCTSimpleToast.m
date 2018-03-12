@@ -6,7 +6,15 @@
 //  Copyright © 2016年 luoruidong. All rights reserved.
 //
 #import <UIKit/UIKit.h>
-#import "RCTBridgeModule.h"
+
+#if __has_include(<React/RCTBridge.h>)
+#import <React/RCTBridge.h>
+#elif __has_include("RCTBridge.h")
+#import "RCTBridge.h"
+#else
+#import "React/RCTBridge.h"   // Required when used as a Pod in a Swift project
+#endif
+
 #import "UIView+Toast.h"
 
 NSInteger const LRDRCTSimpleToastBottomOffset = 40;
@@ -39,12 +47,12 @@ NSInteger const LRDRCTSimpleToastGravityTop = 3;
 }
 
 - (void)keyboardWasShown:(NSNotification *)notification {
-    
+
     CGSize keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
-    
+
     int height = MIN(keyboardSize.height,keyboardSize.width);
     int width = MAX(keyboardSize.height,keyboardSize.width);
-    
+
     _keyOffset = height;
 }
 
@@ -88,19 +96,19 @@ RCT_EXPORT_METHOD(showWithGravity:(NSString *)msg duration:(double)duration grav
     {
         UINavigationController *navigationController = (UINavigationController *)rootViewController.presentedViewController;
         UIViewController *lastViewController = [[navigationController viewControllers] lastObject];
-        
+
         return [self visibleViewController:lastViewController];
     }
     if ([rootViewController.presentedViewController isKindOfClass:[UITabBarController class]])
     {
         UITabBarController *tabBarController = (UITabBarController *)rootViewController.presentedViewController;
         UIViewController *selectedViewController = tabBarController.selectedViewController;
-        
+
         return [self visibleViewController:selectedViewController];
     }
-    
+
     UIViewController *presentedViewController = (UIViewController *)rootViewController.presentedViewController;
-    
+
     return [self visibleViewController:presentedViewController];
 }
 
